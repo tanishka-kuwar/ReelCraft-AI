@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+
+venv/
+
+user_uploads/
+static/reels/
+not_needed/
+
+config.py
+.env

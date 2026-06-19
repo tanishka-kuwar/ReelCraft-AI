@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Create Reel - ReelCraft AI
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/create.css' ) }}">
+{% endblock %}
+
+{% block content %}
+     <section class="upload-section">
+        <div class="container">
+            <div class="upload-container">
+                <h1 class="upload-title">Create Your Reel</h1>
+                <p class="upload-instructions">
+                    Upload images and generate engaging reels with narration, captions, and custom audio.
+                </p>
+
+                <form action="/create" enctype="multipart/form-data" method="post" class="dropzone" id="myDropzone">
+                    <div class="fallback">
+                        <div id="fileInputs">
+                            <div class="file-input-group">
+                                <input name="uuid" type="hidden" value="{{myid}}"/>
+                                <input name="file1" type="file" class="file-input" accept=".jpg,.jpeg,.png" onchange="previewImages()"/>
+                                <button type="button" class="remove-file-btn" onclick="removeFileInput(this)" disabled></button>
+                            </div>
+                        </div>
+
+                        <button type="button" class="add-file-btn" onclick="addFileInput()">+Add File</button>
+
+                        <div id="imagePreviewContainer"></div>
+                    </div>
+                        
+                    <div class="text-input-container">
+
+                        <h3>Audio Source</h3>
+                        <label>
+                            <input type="radio" id="ttsRadio" name="audio_type" value="tts" checked>Generate Audio From Text
+                        </label>
+                        <br>
+
+                        <label>
+                            <input type="radio" id="uploadRadio" name="audio_type" value="upload">Upload My Audio
+                        </label>
+                        <br><br>
+
+                        <div id="ttsSection">
+                                
+                        <textarea class="text-input" id="textInput" name="text" placeholder="Enter text for voice generation..." rows="4"></textarea>
+                        </div>
+
+                        <div id="uploadSection" style="display: none;">                           
+                        <input type="file" name="audio_file" accept=".mp3,.wav">
+                        </div>
+                    
+                        <br><br>
+                        <label for="duration">
+                            Image Duration
+                        </label>
+                        <select name="duration" id="duration">
+                            <option value="1">1 Second</option>
+                            <option value="2">2 Second</option>
+                            <option value="3">3 Second</option>
+                            <option value="4">4 Second</option>
+                            <option value="5">5 Second</option>
+                        </select>
+                        
+                    </div>
+
+                    <div class="text-input-container">
+                        <label>Reel Name</label>
+                        <input type="text" name="reel_name" placeholder="Enter Reel Name" required>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">Create Reel</button>
+
+                    <div id="loading" style="display: none;">Creating your Reel....</div>
+                </form>
+            </div>
+        </div>
+     </section>    
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        let fileCounter = 2; // start from 2 since we already have file1
+
+        function addFileInput(){
+            const fileInputs = document.getElementById('fileInputs');
+            const newFileInput = document.createElement('div');
+            newFileInput.className = 'file-input-group';
+            newFileInput.innerHTML = `
+            <input name="file${fileCounter}" type="file" class="file-input" onchange = "previewImages()" />
+            <button type="button" class="remove-file-btn" onclick="removeFileInput(this)"></button>`;
+
+            fileInputs.appendChild(newFileInput);
+            fileCounter++;
+        }
+
+        function removeFileInput(button){
+            const fileInputGroup = button.parentElement;
+            fileInputGroup.remove();
+
+            previewImages();
+        }
+
+        function previewImages(){
+            const previewContainer = document.getElementById("imagePreviewContainer")
+
+            previewContainer.innerHTML = "";
+
+            const inputs = document.querySelectorAll(".file-input");
+
+            inputs.forEach(input =>{
+                if(input.files && input.files[0]){
+                    const reader = new FileReader();
+                    reader.onload = function(e){
+                        const img = document.createElement("img");
+
+                        img.src = e.target.result;
+                        img.style.width = "120px";
+                        img.style.height = "120px";
+                        img.style.objectFit = "cover";
+                        img.style.margin = "10px";
+
+                        previewContainer.appendChild(img);
+
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            });
+        }
+
+        document.getElementById("myDropzone").addEventListener("submit", function(){
+
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("submitBtn").disabled = true;
+
+});
+
+        const ttsRadio = document.getElementById("ttsRadio");
+        const uploadRadio = document.getElementById("uploadRadio");
+        const ttsSection = document.getElementById("ttsSection");
+        const uploadSection = document.getElementById("uploadSection");
+
+        ttsRadio.addEventListener("change", function(){
+            ttsSection.style.display = "block";
+            uploadSection.style.display = "none";
+        });
+
+        uploadRadio.addEventListener("change",function(){
+            ttsSection.style.display = "none";
+            uploadSection.style.display = "block";
+        });
+    </script>
+{% endblock %}
