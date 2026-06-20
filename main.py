@@ -160,6 +160,5 @@ def delete_reel(reel):
 
     return redirect("/gallery")
     
-app.run(debug=True)
-
-
+if __name__ == "__main__":
+    app.run(debug=True)
