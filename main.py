@@ -72,12 +72,16 @@ def create():
 
     if request.method == "POST":
         rec_id = request.form.get("uuid")
+        if not rec_id:
+            rec_id = str(uuid.uuid4())
         desc = request.form.get("text")
         audio_type = request.form.get("audio_type")
         duration = request.form.get("duration")
         reel_name = request.form.get("reel_name")
 
         reel_name = request.form.get("reel_name")
+        print("FROM DATA: ",request.form)
+        print("UUID:",request.form.get("uuid"))
 
         if not reel_name:
             reel_name = "my_reel"
