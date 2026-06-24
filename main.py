@@ -74,7 +74,7 @@ def create():
         rec_id = request.form.get("uuid")
         if not rec_id:
             rec_id = str(uuid.uuid4())
-        desc = request.form.get("text")
+        desc = request.form.get("text") or ""
         audio_type = request.form.get("audio_type")
         duration = request.form.get("duration")
         reel_name = request.form.get("reel_name")
@@ -101,7 +101,7 @@ def create():
             if key == "audio_file":
                 continue
             if file and file.filename:
-                if not allowed_file(file,filename):
+                if not allowed_file(file.filename):
                     continue
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(folder_path, filename))
