@@ -82,6 +82,8 @@ def create():
         reel_name = request.form.get("reel_name")
         print("FROM DATA: ",request.form)
         print("UUID:",request.form.get("uuid"))
+        print("FORM:", request.form)
+        print("FILES:", request.files)
 
         if not reel_name:
             reel_name = "my_reel"
