@@ -47,6 +47,11 @@ def create_reel(folder, reel_name,caption_text):
 UPLOAD_FOLDER = 'user_uploads' #name of folder where we want to save input files
 ALLOWED_EXTENSION = {'png','jpg','jpeg'}
 
+def allowed_file(filename):
+    return("." in filename and
+            filename.rsplit(".",1)[1].lower() in ALLOWED_EXTENSION
+            )
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -92,6 +97,8 @@ def create():
             if key == "audio_file":
                 continue
             if file and file.filename:
+                if not allowed_file(file,filename):
+                    continue
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(folder_path, filename))
                 input_files.append(filename)
@@ -133,6 +140,8 @@ def create():
         else:
             text_to_speech_file(desc,rec_id) # this creates audio.mp3 automatically
 
+        print("INPUT FILES:",input_files)
+        print("AUDIO TYPE:", audio_type)
         # Create final reel using FFmpeg
         create_reel(rec_id , reel_name, desc)
 
@@ -145,6 +154,7 @@ def create():
 def gallery():
     
     reels_dir = os.path.join("static","reels")
+    os.makedirs(reels_dir, exist_ok=True)
     reels = os.listdir(reels_dir)
 
     return render_template("gallery.html",reels=reels)
