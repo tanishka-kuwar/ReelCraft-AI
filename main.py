@@ -16,7 +16,6 @@ def create_reel(folder, reel_name,caption_text):
     audio_mp3 = f"user_uploads/{folder}/audio.mp3"
     output_mp4 = f"static/reels/{reel_name}_{folder[:8]}.mp4"
     caption_text = caption_text.replace("'","\\'")
-    font_path = "C\\:/Windows/Fonts/arial.ttf"
 
     os.makedirs("static/reels", exist_ok=True)
 
@@ -43,11 +42,21 @@ def create_reel(folder, reel_name,caption_text):
 )
 
     print("Starting FFmpeg...")
-    subprocess.run(command, shell=True, check=True)
-    print("FFmpeg Finished!")
+    result = subprocess.run(
+    command,
+    shell=True,
+    capture_output=True,
+    text=True
+)
+
+    if result.returncode != 0:
+        print(result.stderr)
+        raise RuntimeError("FFmpeg failed.")
+        print("FFmpeg Finished!")
 
 UPLOAD_FOLDER = 'user_uploads' #name of folder where we want to save input files
-ALLOWED_EXTENSION = {'png','jpg','jpeg'}
+ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg"}
+ALLOWED_VIDEO_EXTENSIONS = {"mp4", "mov", "avi"}
 
 def allowed_file(filename):
     return("." in filename and
@@ -81,12 +90,18 @@ def create():
         duration = request.form.get("duration")
         reel_name = request.form.get("reel_name")
 
-        reel_name = request.form.get("reel_name")
         print("FROM DATA: ",request.form)
         print("UUID:",request.form.get("uuid"))
         print("FORM:", request.form)
         print("FILES:", request.files)
         print("CONTENT TYPE:", request.content_type)
+        print("INPUT FILES:", input_files)
+        print("AUDIO TYPE:", audio_type)
+        print("Starting FFmpeg...")
+        print("FFmpeg Finished!")
+        print("REEL CREATED SUCCESSFULLY")
+        print("GALLERY OPENED")
+        print("REELS:", reels)
 
         if not reel_name:
             reel_name = "my_reel"
@@ -144,10 +159,17 @@ def create():
                 audio.save(
                     os.path.join(folder_path, "audio.mp3")
                 )
+            else:
+                return "Please upload an audio file.",400
+        elif audio_type == "tts":
+            if not desc:
+                return "Please enter text for TTS.",400
+
+            text_to_speech_file(desc,rec_id)
 
         # Generate narration using gTTS
         else:
-            text_to_speech_file(desc,rec_id) # this creates audio.mp3 automatically
+            return "Invalid audio option.",400
 
         print("INPUT FILES:",input_files)
         print("AUDIO TYPE:", audio_type)
@@ -166,8 +188,7 @@ def gallery():
 
     reels_dir = os.path.join("static","reels")
 
-    if not os.path.exists(reels_dir):
-        os.makedirs(reels_dir)
+    os.makedirs(reels_dir, exist_ok=True)
 
     reels = os.listdir(reels_dir)
 
