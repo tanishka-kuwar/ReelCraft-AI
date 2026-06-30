@@ -151,20 +151,27 @@ def create():
         print("AUDIO TYPE:", audio_type)
         # Create final reel using FFmpeg
         create_reel(rec_id , reel_name, desc)
+        print("REEL CREATED SUCCESSFULLY")
 
         return redirect("/gallery")
 
     return render_template("create.html", myid=myid)
 
 @app.route("/gallery")
-
 def gallery():
-    
+
+    print("GALLERY OPENED")
+
     reels_dir = os.path.join("static","reels")
-    os.makedirs(reels_dir, exist_ok=True)
+
+    if not os.path.exists(reels_dir):
+        os.makedirs(reels_dir)
+
     reels = os.listdir(reels_dir)
 
-    return render_template("gallery.html",reels=reels)
+    print("REELS:", reels)
+
+    return render_template("gallery.html", reels=reels)
 
 @app.route("/delete/<reel>")
 
