@@ -42,7 +42,9 @@ def create_reel(folder, reel_name,caption_text):
 
 )
 
+    print("Starting FFmpeg...")
     subprocess.run(command, shell=True, check=True)
+    print("FFmpeg Finished!")
 
 UPLOAD_FOLDER = 'user_uploads' #name of folder where we want to save input files
 ALLOWED_EXTENSION = {'png','jpg','jpeg'}
