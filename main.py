@@ -52,16 +52,18 @@ def create_reel(folder, reel_name,caption_text):
     if result.returncode != 0:
         print(result.stderr)
         raise RuntimeError("FFmpeg failed.")
-        print("FFmpeg Finished!")
+
+    print("FFmpeg Finished!")
 
 UPLOAD_FOLDER = 'user_uploads' #name of folder where we want to save input files
 ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg"}
 ALLOWED_VIDEO_EXTENSIONS = {"mp4", "mov", "avi"}
 
 def allowed_file(filename):
-    return("." in filename and
-            filename.rsplit(".",1)[1].lower() in ALLOWED_EXTENSION
-            )
+    return (
+        "." in filename and
+        filename.rsplit(".",1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
+    )
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -90,18 +92,8 @@ def create():
         duration = request.form.get("duration")
         reel_name = request.form.get("reel_name")
 
-        print("FROM DATA: ",request.form)
-        print("UUID:",request.form.get("uuid"))
         print("FORM:", request.form)
         print("FILES:", request.files)
-        print("CONTENT TYPE:", request.content_type)
-        print("INPUT FILES:", input_files)
-        print("AUDIO TYPE:", audio_type)
-        print("Starting FFmpeg...")
-        print("FFmpeg Finished!")
-        print("REEL CREATED SUCCESSFULLY")
-        print("GALLERY OPENED")
-        print("REELS:", reels)
 
         if not reel_name:
             reel_name = "my_reel"
