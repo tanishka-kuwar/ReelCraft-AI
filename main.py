@@ -167,9 +167,13 @@ def create():
         print("INPUT FILES:",input_files)
         print("AUDIO TYPE:", audio_type)
         # Create final reel using FFmpeg
-        create_reel(rec_id , reel_name, desc)
-        print("REEL CREATED SUCCESSFULLY")
+        try:
+            create_reel(rec_id, reel_name, desc)
+        except Exception as e:
+            print("FFMPEG ERROR:", e)
+            return f"Error: {e}", 500
 
+        print("REEL CREATED SUCCESSFULLY")
         return redirect("/gallery")
 
     return render_template("create.html", myid=myid)
