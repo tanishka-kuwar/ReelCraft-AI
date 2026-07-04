@@ -11,54 +11,58 @@ from text_to_audio_gtts import text_to_speech_file
 
 import subprocess
 
-def create_reel(folder, reel_name,caption_text):
+def create_reel(folder, reel_name, caption_text):
 
     input_txt = f"user_uploads/{folder}/input.txt"
     audio_mp3 = f"user_uploads/{folder}/audio.mp3"
     output_mp4 = f"static/reels/{reel_name}_{folder[:8]}.mp4"
-    caption_text = caption_text.replace("'","\\'")
 
-    os.makedirs("static/reels", exist_ok=True)
+    caption_text = caption_text.replace("'", "\\'")
 
     command = (
-    f'ffmpeg -y -f concat -safe 0 '
-    f'-i "{input_txt}" '
-    f'-i "{audio_mp3}" '
-    f'-vf "scale=1080:1920:force_original_aspect_ratio=decrease,'
-    f'pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,'
-    # f'drawtext=fontfile={font_path}:'
-    f'drawtext=text=\'{caption_text}\':'
-    f'fontcolor=white:'
-    f'fontsize=48:'
-    f'box=1:'
-    f'boxcolor=black@0.5:'
-    f'boxborderw=10:'
-    f'x=(w-text_w)/2:'
-    f'y=h-150" '
+        f'ffmpeg -y '
+        f'-f concat -safe 0 '
+        f'-i "{input_txt}" '
+        f'-i "{audio_mp3}" '
+        f'-vf "scale=1080:1920:force_original_aspect_ratio=decrease,'
+        f'pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,'
+        f'drawtext=text=\'{caption_text}\':'
+        f'fontcolor=white:'
+        f'fontsize=48:'
+        f'box=1:'
+        f'boxcolor=black@0.5:'
+        f'boxborderw=10:'
+        f'x=(w-text_w)/2:'
+        f'y=h-150" '
+        f'-c:v libx264 '
+        f'-c:a aac '
+        f'-shortest '
+        f'-r 30 '
+        f'-pix_fmt yuv420p '
+        f'"{output_mp4}"'
+    )
 
-    f'-c:v libx264 -c:a aac -shortest '
-    f'-r 30 -pix_fmt yuv420p '
-    f'"{output_mp4}"'
+    print("\n========== COMMAND ==========")
+    print(command)
 
-)
-
-    print("Starting FFmpeg...")
     result = subprocess.run(
-    command,
-    shell=True,
-    capture_output=True,
-    text=True
-)
+        command,
+        shell=True,
+        capture_output=True,
+        text=True
+    )
+
+    print("\n========== STDOUT ==========")
+    print(result.stdout)
+
+    print("\n========== STDERR ==========")
+    print(result.stderr)
+
+    print("\n========== RETURN CODE ==========")
+    print(result.returncode)
 
     if result.returncode != 0:
-        print(result.stderr)
-        raise RuntimeError("FFmpeg failed.")
-
-    print("FFmpeg Finished!")
-
-UPLOAD_FOLDER = 'user_uploads' #name of folder where we want to save input files
-ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg"}
-ALLOWED_VIDEO_EXTENSIONS = {"mp4", "mov", "avi"}
+        raise Exception(result.stderr)
 
 def allowed_file(filename):
     return (
@@ -120,6 +124,9 @@ def create():
                 file.save(os.path.join(folder_path, filename))
                 input_files.append(filename)
 
+        print("Images received:", input_files)
+        print("Total images:", len(input_files))
+
         # save desc.txt
         with open(
             os.path.join(folder_path,"desc.txt"),
@@ -144,6 +151,12 @@ def create():
                 )
                 f.write(f"file '{last_img}' \n")
 
+        print("\n===== input.txt =====")
+
+        with open(input_txt_path, "r") as file:
+            print(file.read())
+
+        print("=====================")
         # handle audio upload
         if audio_type == "upload":
             audio = request.files.get("audio_file")
@@ -166,6 +179,8 @@ def create():
 
         print("INPUT FILES:",input_files)
         print("AUDIO TYPE:", audio_type)
+        print("DESC =", desc)
+        print("CAPTION =", desc)
         # Create final reel using FFmpeg
         try:
             create_reel(rec_id, reel_name, desc)
