@@ -1,7 +1,15 @@
 import os
 from werkzeug.utils import secure_filename
 
-ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "jfif"}
+ALLOWED_IMAGE_EXTENSIONS = { "jpg",
+                            "jpeg",
+                            "png",
+                            "jfif",
+                            "bmp",
+                            "gif",
+                            "webp",
+                            "tiff",
+                            "tif"}
 
 
 def allowed_file(filename):

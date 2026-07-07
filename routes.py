@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, jsonify
 from app import app
 
 import os
@@ -7,7 +7,7 @@ import uuid
 from upload_service import save_images, save_audio
 from audio_service import text_to_speech_file
 from reel_service import create_reel
-
+from ai_service import generate_script, generate_script_from_images
 
 print("RUNNING ROUTES.PY")
 
@@ -116,6 +116,57 @@ def create():
         myid=myid
     )
 
+@app.route("/generate-script", methods=["POST"])
+def generate_ai_script():
+
+    from werkzeug.utils import secure_filename
+    import tempfile
+    import os
+
+    image_paths = []
+
+    try:
+
+        images = request.files.getlist("images")
+
+        if len(images) == 0:
+            return jsonify({"script": "Please upload images first."})
+
+        temp_dir = tempfile.mkdtemp()
+
+        for image in images:
+
+            filename = secure_filename(image.filename)
+
+            path = os.path.join(temp_dir, filename)
+
+            image.save(path)
+
+            image_paths.append(path)
+
+        script = generate_script_from_images(image_paths)
+
+        return jsonify({
+            "script": script
+        })
+
+    except Exception as e:
+
+        print(e)
+
+        return jsonify({
+            "script": str(e)
+        }), 500
+
+    finally:
+
+        for path in image_paths:
+
+            if os.path.exists(path):
+                os.remove(path)
+
+        if 'temp_dir' in locals() and os.path.exists(temp_dir):
+            os.rmdir(temp_dir)
 
 @app.route("/gallery")
 def gallery():

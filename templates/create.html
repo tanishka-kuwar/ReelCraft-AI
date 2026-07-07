@@ -24,7 +24,7 @@ Create Reel - ReelCraft AI
 
                             <input name="uuid" type="hidden" value="{{myid}}" />
 
-                            <input name="file1" type="file" class="file-input" accept=".jpg,.jpeg,.png"
+                            <input name="file${fileCounter}" type="file" class="file-input" accept="image/*" 
                                 onchange="previewImages()" />
 
                             <label>Duration</label>
@@ -65,6 +65,9 @@ Create Reel - ReelCraft AI
 
                         <textarea class="text-input" id="textInput" name="text"
                             placeholder="Enter text for voice generation..." rows="4"></textarea>
+                        <button type="button" id="generateAiBtn">
+                            ✨ Generate AI Script
+                        </button>
                     </div>
 
                     <div id="uploadSection" style="display: none;">
@@ -93,20 +96,20 @@ Create Reel - ReelCraft AI
 <script>
     let fileCounter = 2; // start from 2 since we already have file1
 
-    function addFileInput(){
+    function addFileInput() {
 
-    const fileInputs = document.getElementById("fileInputs");
+        const fileInputs = document.getElementById("fileInputs");
 
-    const div = document.createElement("div");
+        const div = document.createElement("div");
 
-    div.className = "file-input-group";
+        div.className = "file-input-group";
 
-    div.innerHTML = `
+        div.innerHTML = `
         <input
             name="file${fileCounter}"
             type="file"
             class="file-input"
-            accept=".jpg,.jpeg,.png"
+            accept="image/*"
             onchange="previewImages()"
         >
 
@@ -131,11 +134,11 @@ Create Reel - ReelCraft AI
         </button>
     `;
 
-    fileInputs.appendChild(div);
+        fileInputs.appendChild(div);
 
-    fileCounter++;
+        fileCounter++;
 
-}
+    }
 
     function removeFileInput(button) {
         const fileInputGroup = button.parentElement;
@@ -193,5 +196,60 @@ Create Reel - ReelCraft AI
         ttsSection.style.display = "none";
         uploadSection.style.display = "block";
     });
+
+    document.getElementById("generateAiBtn").addEventListener("click", async function () {
+
+        this.disabled = true;
+        this.innerText = "Generating...";
+
+        try {
+            const formData = new FormData();
+
+            const inputs = document.querySelectorAll(".file-input");
+
+            let hasImage = false;
+
+            inputs.forEach((input) => {
+                if (input.files.length > 0) {
+                    hasImage = true;
+                }
+            });
+
+            if (!hasImage) {
+                alert("Please upload at least one image.");
+                return;
+            }
+
+            inputs.forEach((input) => {
+
+                if (input.files.length > 0) {
+
+                    formData.append("images", input.files[0]);
+
+                }
+
+            });
+
+            const response = await fetch("/generate-script", {
+
+                method: "POST",
+
+                body: formData
+
+            });
+            
+            const textBox = document.getElementById("textInput");
+            const data = await response.json();
+            textBox.value = data.script;
+        }
+
+        catch (err) {
+            alert("AI generatin failed.")
+            console.log(err);
+        }
+        this.disabled = false;
+        this.innerText = "✨ Generate AI Script";
+
+    })
 </script>
 {% endblock %}
