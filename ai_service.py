@@ -66,3 +66,30 @@ def generate_script_from_images(image_paths):
                 raise
 
     raise Exception("Gemini is busy. Please try again in a few seconds.")
+
+def generate_hashtags_from_images(image_paths):
+
+    prompt = """
+Analyze all uploaded images.
+
+Generate 15 relevant Instagram hashtags.
+
+Rules:
+- Return only hashtags.
+- One hashtag per line.
+- No numbering.
+- No explanation.
+"""
+
+    contents = [prompt]
+
+    for path in image_paths:
+        img = Image.open(path)
+        contents.append(img)
+
+    response = client.models.generate_content(
+        model=os.getenv("GEMINI_MODEL"),
+        contents=contents
+    )
+
+    return response.text

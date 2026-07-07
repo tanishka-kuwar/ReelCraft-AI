@@ -7,7 +7,11 @@ import uuid
 from upload_service import save_images, save_audio
 from audio_service import text_to_speech_file
 from reel_service import create_reel
-from ai_service import generate_script, generate_script_from_images
+from ai_service import (
+    generate_script,
+    generate_script_from_images,
+    generate_hashtags_from_images
+)
 
 print("RUNNING ROUTES.PY")
 
@@ -202,3 +206,57 @@ def delete_reel(reel):
         os.remove(reel_path)
 
     return redirect("/gallery")
+
+@app.route("/generate-hashtags", methods=["POST"])
+def generate_ai_hashtags():
+
+    from werkzeug.utils import secure_filename
+    import tempfile
+    import os
+
+    image_paths = []
+
+    try:
+
+        images = request.files.getlist("images")
+
+        if len(images) == 0:
+            return jsonify({
+                "hashtags": "Please upload images first."
+            })
+
+        temp_dir = tempfile.mkdtemp()
+
+        for image in images:
+
+            filename = secure_filename(image.filename)
+
+            path = os.path.join(temp_dir, filename)
+
+            image.save(path)
+
+            image_paths.append(path)
+
+        hashtags = generate_hashtags_from_images(image_paths)
+
+        return jsonify({
+            "hashtags": hashtags
+        })
+
+    except Exception as e:
+
+        print(e)
+
+        return jsonify({
+            "hashtags": str(e)
+        }), 500
+
+    finally:
+
+        for path in image_paths:
+            if os.path.exists(path):
+                os.remove(path)
+
+        if 'temp_dir' in locals():
+            if os.path.exists(temp_dir):
+                os.rmdir(temp_dir)
