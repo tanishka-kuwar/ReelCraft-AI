@@ -211,20 +211,20 @@ def create():
                         voice_audio
                     )
 
-                # create reel
-            success = create_reel(
-            folder_path,
-            rec_id,
-            reel_name,
-            desc,
-            durations,
-            input_files
-            )
+        # create reel
+        success = create_reel(
+        folder_path,
+        rec_id,
+        reel_name,
+        desc,
+        durations,
+        input_files
+        )
 
-            if not success:
-                return "Reel generation failed.", 500
+        if not success:
+            return "Reel generation failed.", 500
 
-            return redirect("/gallery")
+        return redirect("/gallery")
 
     return render_template(
         "create.html",
