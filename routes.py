@@ -10,8 +10,10 @@ from reel_service import create_reel
 from ai_service import (
     generate_script,
     generate_script_from_images,
-    generate_hashtags_from_images
+    generate_hashtags_from_images,
+    recommend_music
 )
+from audio_mixer import mix_audio
 
 print("RUNNING ROUTES.PY")
 
@@ -37,6 +39,9 @@ def create():
         print("TEXTAREA VALUE:")
         print(repr(desc))
         audio_type = request.form.get("audio_type")
+        music_type = request.form.get("music_type")
+        selected_music = request.form.get("selected_music")
+        music_volume = int(request.form.get("music_volume", 25))
         
         reel_name = request.form.get("reel_name")
 
@@ -99,21 +104,127 @@ def create():
 
         else:
             return "Invalid audio type.", 400
+        
+       # -------------------------
+        # Voice Audio
+        # -------------------------
 
-        # Create Reel
-        success = create_reel(
+        voice_audio = os.path.join(folder_path, "audio.mp3")
+
+        music_audio = None
+
+        # -------------------------
+        # Manual Music
+        # -------------------------
+
+        if music_type == "manual":
+
+            music_audio = os.path.join(
+                "static",
+                "music",
+                f"{selected_music}.mp3"
+            )
+
+        # -------------------------
+        # AI Recommended Music
+        # -------------------------
+
+        elif music_type == "ai":
+
+            try:
+
+                music_name = recommend_music(
                     folder_path,
-                    rec_id,
-                    reel_name,
-                    desc,
-                    durations,
                     input_files
                 )
 
-        if not success:
-            return "Reel generation failed.", 500
+            except Exception as e:
 
-        return redirect("/gallery")
+                print("Gemini Error:", e)
+                print("Using fallback music: chill")
+
+                music_name = "chill"
+
+            music_name = (
+                music_name
+                .strip()
+                .lower()
+                .replace(".", "")
+                .replace(",", "")
+            )
+
+            allowed = {
+                "chill",
+                "travel",
+                "happy",
+                "cinematic",
+                "emotional",
+                "energetic"
+            }
+
+            if music_name not in allowed:
+
+                print("Invalid category:", music_name)
+                music_name = "chill"
+
+            print("AI Recommended Music:", music_name)
+
+            music_audio = os.path.join(
+                "static",
+                "music",
+                f"{music_name}.mp3"
+            )
+        print("Music Type:", music_type)
+        print("Selected Music:", selected_music)
+        print("Music Audio Path:", music_audio)
+        print("Exists:", os.path.exists(music_audio) if music_audio else False)
+
+        # -------------------------
+        # Mix Voice + Background Music
+        # -------------------------
+
+        if music_audio:
+
+            if music_audio and os.path.exists(music_audio):
+
+                print("Using music:", music_audio)
+
+                final_audio = os.path.join(
+                    folder_path,
+                    "final_audio.mp3"
+                )
+
+                success = mix_audio(
+                    voice_audio,
+                    music_audio,
+                    final_audio,
+                    music_volume
+                )
+
+                if success:
+
+                    if os.path.exists(voice_audio):
+                        os.remove(voice_audio)
+
+                    os.rename(
+                        final_audio,
+                        voice_audio
+                    )
+
+                # create reel
+            success = create_reel(
+            folder_path,
+            rec_id,
+            reel_name,
+            desc,
+            durations,
+            input_files
+            )
+
+            if not success:
+                return "Reel generation failed.", 500
+
+            return redirect("/gallery")
 
     return render_template(
         "create.html",

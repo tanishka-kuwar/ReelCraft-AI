@@ -18,6 +18,7 @@ Create Reel - ReelCraft AI
             </p>
 
             <form action="/create" enctype="multipart/form-data" method="post" class="dropzone" id="myDropzone">
+              
                 <div class="fallback">
                     <div id="fileInputs">
                         <div class="file-input-group">
@@ -50,45 +51,117 @@ Create Reel - ReelCraft AI
 
                 <div class="text-input-container">
 
-                    <h3>Audio Source</h3>
+                    <h3>🎤 Voice</h3>
+
                     <label>
-                        <input type="radio" id="ttsRadio" name="audio_type" value="tts" checked>Generate Audio From Text
+                        <input type="radio" id="ttsRadio" name="audio_type" value="tts" checked>
+                        AI Voice (TTS)
                     </label>
+
                     <br>
 
                     <label>
-                        <input type="radio" id="uploadRadio" name="audio_type" value="upload">Upload My Audio
+                        <input type="radio" id="uploadRadio" name="audio_type" value="upload">
+                        Upload My Audio
                     </label>
+
                     <br><br>
 
                     <div id="ttsSection">
 
                         <textarea class="text-input" id="textInput" name="text"
-                            placeholder="Enter text for voice generation..." rows="4"></textarea>
+                            placeholder="Generate or edit your narration..." rows="5"></textarea>
                         <button type="button" id="generateAiBtn">
                             ✨ Generate AI Script
                         </button>
                     </div>
 
-                    <div id="uploadSection" style="display: none;">
+                    <div id="uploadSection" style="display:none;">
+
                         <input type="file" name="audio_file" accept=".mp3,.wav">
+
                     </div>
+
+                </div>
+
+                <hr>
+
+                <div class="text-input-container">
+
+                    <h3>🎵 Background Music</h3>
+
+                    <label>
+
+                        <input type="radio" name="music_type" value="none" checked>
+
+                        None
+
+                    </label>
+
+                    <br>
+
+                    <label>
+
+                        <input type="radio" name="music_type" value="ai">
+
+                        AI Recommend
+
+                    </label>
+
+                    <br>
+
+                    <label>
+
+                        <input type="radio" id="manualMusicRadio" name="music_type" value="manual">
+
+                        Choose Myself
+
+                    </label>
 
                     <br><br>
 
+                    <div id="manualMusicSection" style="display:none;">
+
+                        <select id="musicSelect" name="selected_music">
+
+                            <option value="chill">Chill</option>
+                            <option value="travel">Travel</option>
+                            <option value="happy">Happy</option>
+                            <option value="cinematic">Cinematic</option>
+                            <option value="emotional">Emotional</option>
+                            <option value="energetic">Energetic</option>
+
+                        </select>
+
+                    </div>
+
                 </div>
+
+                <hr>
+
+                <div class="text-input-container">
+
+                    <h3>🔊 Background Music Volume</h3>
+
+                    <input type="range" id="musicVolume" name="music_volume" min="0" max="100" value="25">
+
+                    <span id="volumeValue">25%</span>
+
+                </div>
+
+
                 <div class="text-input-container">
 
                     <label>AI Hashtags</label>
 
-                    <textarea id="hashtagsBox" rows="6" readonly placeholder="Click 'Generate AI Hashtags'">
-    </textarea>
+                    <textarea id="hashtagsBox" rows="6" readonly placeholder="Click 'Generate AI Hashtags'"></textarea>
 
                     <button type="button" id="generateHashtagsBtn">
                         ✨ Generate AI Hashtags
                     </button>
 
                 </div>
+
 
                 <div class="text-input-container">
                     <label>Reel Name</label>
@@ -203,6 +276,37 @@ Create Reel - ReelCraft AI
         ttsSection.style.display = "block";
         uploadSection.style.display = "none";
     });
+    const manualMusicRadio = document.getElementById("manualMusicRadio");
+
+    const manualMusicSection = document.getElementById("manualMusicSection");
+
+    manualMusicRadio.addEventListener("change", function () {
+
+        manualMusicSection.style.display = "block";
+
+    });
+
+    document.querySelector('input[value="none"]').addEventListener("change", function () {
+
+        manualMusicSection.style.display = "none";
+
+    });
+
+    document.querySelector('input[value="ai"]').addEventListener("change", function () {
+
+        manualMusicSection.style.display = "none";
+
+    });
+
+    const volumeSlider = document.getElementById("musicVolume");
+
+    const volumeValue = document.getElementById("volumeValue");
+
+    volumeSlider.addEventListener("input", function () {
+
+        volumeValue.innerText = this.value + "%";
+
+    });
 
     uploadRadio.addEventListener("change", function () {
         ttsSection.style.display = "none";
@@ -266,63 +370,64 @@ Create Reel - ReelCraft AI
 
     document.getElementById("generateHashtagsBtn").addEventListener("click", async function () {
 
-    const hashtagsBox = document.getElementById("hashtagsBox");
+        const hashtagsBox = document.getElementById("hashtagsBox");
 
-    this.disabled = true;
-    this.innerText = "Generating...";
+        this.disabled = true;
+        this.innerText = "Generating...";
 
-    try {
+        try {
 
-        const formData = new FormData();
+            const formData = new FormData();
 
-        const inputs = document.querySelectorAll(".file-input");
+            const inputs = document.querySelectorAll(".file-input");
 
-        let hasImage = false;
+            let hasImage = false;
 
-        inputs.forEach((input) => {
+            inputs.forEach((input) => {
 
-            if (input.files.length > 0) {
+                if (input.files.length > 0) {
 
-                hasImage = true;
-                formData.append("images", input.files[0]);
+                    hasImage = true;
+                    formData.append("images", input.files[0]);
+
+                }
+
+            });
+
+            if (!hasImage) {
+
+                alert("Please upload at least one image.");
+
+                return;
 
             }
 
-        });
+            const response = await fetch("/generate-hashtags", {
 
-        if (!hasImage) {
+                method: "POST",
 
-            alert("Please upload at least one image.");
+                body: formData
 
-            return;
+            });
+
+            const data = await response.json();
+
+            hashtagsBox.value = data.hashtags;
 
         }
 
-        const response = await fetch("/generate-hashtags", {
+        catch (err) {
 
-            method: "POST",
+            alert("Hashtag generation failed.");
 
-            body: formData
+            console.log(err);
 
-        });
+        }
 
-        const data = await response.json();
+        this.disabled = false;
+        this.innerText = "✨ Generate AI Hashtags";
 
-        hashtagsBox.value = data.hashtags;
+    });
 
-    }
-
-    catch (err) {
-
-        alert("Hashtag generation failed.");
-
-        console.log(err);
-
-    }
-
-    this.disabled = false;
-    this.innerText = "✨ Generate AI Hashtags";
-
-});
-</script>
+   </script>
 {% endblock %}

@@ -52,20 +52,23 @@ def generate_script_from_images(image_paths):
         contents.append(img)
 
     for _ in range(3):
+
         try:
+
             response = client.models.generate_content(
                 model=os.getenv("GEMINI_MODEL"),
                 contents=contents
             )
-            return response.text
+
+            return response.text.strip().lower()
 
         except Exception as e:
-            if "503" in str(e):
-                time.sleep(2)
-            else:
-                raise
 
-    raise Exception("Gemini is busy. Please try again in a few seconds.")
+            print(e)
+
+            time.sleep(2)
+
+    raise Exception("Gemini is temporarily unavailable. Please try again.")
 
 def generate_hashtags_from_images(image_paths):
 
@@ -93,3 +96,48 @@ Rules:
     )
 
     return response.text
+
+def recommend_music(folder_path, input_files):
+
+    prompt = """
+Analyze the uploaded images.
+
+Recommend ONLY ONE music category.
+
+Choose exactly one from:
+
+chill
+travel
+happy
+cinematic
+emotional
+energetic
+
+Return ONLY the category name.
+"""
+
+    contents = [prompt]
+
+    for image in input_files:
+
+        path = os.path.join(folder_path, image)
+
+        with Image.open(path) as img:
+            contents.append(img.copy())
+        
+    for _ in range(3):
+
+        try:
+
+            response = client.models.generate_content(
+                model=os.getenv("GEMINI_MODEL"),
+                contents=contents
+            )
+
+            return response.text.strip().lower()
+        
+        except Exception as e:
+
+            print("Gemini Error:", e)
+            time.sleep(2)
+    return "chill"
