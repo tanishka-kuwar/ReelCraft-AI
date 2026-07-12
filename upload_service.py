@@ -1,4 +1,6 @@
 import os
+import re
+from PIL import Image
 from werkzeug.utils import secure_filename
 
 ALLOWED_IMAGE_EXTENSIONS = { "jpg",
@@ -23,32 +25,36 @@ def save_images(request, folder_path):
 
     input_files = []
 
-    print("FILES RECEIVED:", request.files)
-
     for key in request.files:
 
-        print("KEY:", key)
+        if not key.startswith("file"):
+            continue
 
         file = request.files[key]
 
-        print("FILENAME:", file.filename)
-
-        if key == "audio_file":
+        if file.filename == "":
             continue
 
-        if file and file.filename:
+        # Clean filename
+        name = os.path.splitext(file.filename)[0]
+        name = re.sub(r'[^A-Za-z0-9_-]', "_", name)
 
-            if not allowed_file(file.filename):
-                print(f"Skipped: {file.filename}")
-                continue
+        filename = f"{name}.jpg"
 
-            filename = secure_filename(file.filename)
+        path = os.path.join(folder_path, filename)
 
-            file.save(os.path.join(folder_path, filename))
+        img = Image.open(file)
 
-            input_files.append(filename)
+        # Convert images with transparency correctly
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+        else:
+            img = img.convert("RGB")
 
-    print("FINAL INPUT FILES:", input_files)
+        img.thumbnail((1920, 1920))
+        img.save(path, "JPEG", quality=95)
+
+        input_files.append(filename)
 
     return input_files
 

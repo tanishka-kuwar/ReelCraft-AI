@@ -117,22 +117,30 @@ def create_reel(
     )
 
     caption_text = (
-    caption_text
-    .replace("\r", " ")
-    .replace("\n", " ")
-    .replace("\\", "\\\\")
-    .replace(":", "\\:")
-    .replace("'", "\\'")
-    .replace('"', '\\"')
-    .strip()
-)
+        caption_text
+        .replace("\r", " ")
+        .replace("\n", " ")
+        .replace("\\", "\\\\")
+        .replace(":", "\\:")
+        .replace("'", r"\'")
+        .replace('"', r'\"')
+        .replace(",", r"\,")
+        .replace("[", r"\[")
+        .replace("]", r"\]")
+        .strip()
+    )
+    caption_file = os.path.join(folder_path, "caption.txt")
+    caption_file = caption_file.replace("\\", "/")
+
+    with open(caption_file, "w", encoding="utf-8") as f:
+        f.write(caption_text)
 
     cmd = (
         f'ffmpeg -y '
         f'-i "{slideshow}" '
         f'-i "{audio}" '
         f'-vf "drawtext='
-        f'text=\'{caption_text}\':'
+        f'textfile=\'{caption_file}\':'
         f'fontcolor=white:'
         f'fontsize=48:'
         f'box=1:'
@@ -149,7 +157,9 @@ def create_reel(
     print(cmd)
     print("=" * 100)
     print("caption_text =", repr(caption_text))
-    print("output =", output)   
+    print("output =", output) 
+    print(caption_file)
+    print(os.path.exists(caption_file))  
     if not run(cmd):
         return False
 

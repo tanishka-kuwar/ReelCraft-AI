@@ -141,3 +141,36 @@ Return ONLY the category name.
             print("Gemini Error:", e)
             time.sleep(2)
     return "chill"
+
+def order_images(folder_path, input_files):
+
+    prompt = """
+You are an expert storyteller.
+
+Analyze all uploaded images.
+
+Arrange them into the best chronological order for an Instagram Reel.
+
+Return ONLY the image numbers separated by commas.
+
+Example:
+3,1,2
+
+Do not explain anything.
+"""
+
+    contents = [prompt]
+
+    for i, image in enumerate(input_files, start=1):
+        contents.append(f"Image {i}")
+        path = os.path.join(folder_path, image)
+
+        with Image.open(path) as img:
+            contents.append(img.copy())
+
+    response = client.models.generate_content(
+        model=os.getenv("GEMINI_MODEL"),
+        contents=contents
+    )
+
+    return response.text.strip()

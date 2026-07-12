@@ -11,7 +11,8 @@ from ai_service import (
     generate_script,
     generate_script_from_images,
     generate_hashtags_from_images,
-    recommend_music
+    recommend_music,
+    order_images
 )
 from audio_mixer import mix_audio
 
@@ -61,11 +62,53 @@ def create():
             folder_path
         )
 
+        try:
+
+            ai_order = order_images(
+                folder_path,
+                input_files
+            )
+
+            print("AI Order:", ai_order)
+
+        except Exception as e:
+
+            print("Story ordering failed:", e)
+
+            ai_order = ""
+        
+        if ai_order:
+
+            try:
+
+                indexes = [
+                    int(x.strip()) - 1
+                    for x in ai_order.split(",")
+                ]
+
+                if len(indexes) == len(input_files):
+
+                    input_files = [
+                        input_files[i]
+                        for i in indexes
+                    ]
+
+                    print("New Order:", input_files)
+
+            except Exception as e:
+
+                print("Invalid AI order:", e)
+
         durations = []
 
         for i in range(len(input_files)):
 
             d = request.form.get(f"duration{i+1}")
+
+            print(f"duration{i+1} =", d)
+
+            if d is None or d == "":
+                d = "3"      # default duration
 
             durations.append(int(d))
 
