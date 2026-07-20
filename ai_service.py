@@ -174,3 +174,35 @@ Do not explain anything.
     )
 
     return response.text.strip()
+
+def recommend_transition(folder_path, input_files):
+
+    prompt = """
+Analyze the uploaded images.
+
+Choose ONLY ONE transition for the slideshow.
+
+Choose exactly one from:
+
+fade
+zoom
+slide
+
+Return ONLY the transition name.
+"""
+
+    contents = [prompt]
+
+    for image in input_files:
+
+        path = os.path.join(folder_path, image)
+
+        with Image.open(path) as img:
+            contents.append(img.copy())
+
+    response = client.models.generate_content(
+        model=os.getenv("GEMINI_MODEL"),
+        contents=contents
+    )
+
+    return response.text.strip().lower()

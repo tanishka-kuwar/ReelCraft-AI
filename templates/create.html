@@ -18,15 +18,22 @@ Create Reel - ReelCraft AI
             </p>
 
             <form action="/create" enctype="multipart/form-data" method="post" class="dropzone" id="myDropzone">
-              
+
                 <div class="fallback">
+                    <div id="dropZone" class="drop-zone">
+
+                        <h3>📁 Drag & Drop Images Here</h3>
+
+                        <p>or Click to Browse</p>
+
+                    </div>
+                    <input type="file" id="hiddenImageInput" accept="image/*" multiple hidden>
                     <div id="fileInputs">
                         <div class="file-input-group">
 
                             <input name="uuid" type="hidden" value="{{myid}}" />
 
-                            <input name="file${fileCounter}" type="file" class="file-input" accept="image/*"
-                                onchange="previewImages()" />
+                            <input name="file1" type="file" class="file-input" accept="image/*" onchange="previewImages()">
 
                             <label>Duration</label>
 
@@ -170,7 +177,30 @@ Create Reel - ReelCraft AI
 
                 <button type="submit" class="submit-btn" id="submitBtn">Create Reel</button>
 
-                <div id="loading" style="display: none;">Creating your Reel....</div>
+                <div id="loading" style="display:none; margin-top:20px;">
+
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+
+                        <div class="spinner"></div>
+
+                        <strong id="progressText">
+                            Preparing...
+                        </strong>
+
+                    </div>
+
+                    <div class="progress" style="height:25px;">
+
+                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                            role="progressbar" style="width:0%;">
+
+                            0%
+
+                        </div>
+
+                    </div>
+
+                </div>
             </form>
         </div>
     </div>
@@ -178,256 +208,11 @@ Create Reel - ReelCraft AI
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    let fileCounter = 2; // start from 2 since we already have file1
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 
-    function addFileInput() {
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
 
-        const fileInputs = document.getElementById("fileInputs");
+<script src="{{ url_for('static', filename='js/create.js') }}"></script>
 
-        const div = document.createElement("div");
-
-        div.className = "file-input-group";
-
-        div.innerHTML = `
-        <input
-            name="file${fileCounter}"
-            type="file"
-            class="file-input"
-            accept="image/*"
-            onchange="previewImages()"
-        >
-
-        <label>Duration</label>
-
-        <select
-            name="duration${fileCounter}"
-            class="duration-select">
-
-            <option value="1">1 sec</option>
-            <option value="2">2 sec</option>
-            <option value="3">3 sec</option>
-            <option value="4">4 sec</option>
-            <option value="5">5 sec</option>
-
-        </select>
-
-        <button
-            type="button"
-            class="remove-file-btn"
-            onclick="removeFileInput(this)">
-        </button>
-    `;
-
-        fileInputs.appendChild(div);
-
-        fileCounter++;
-
-    }
-
-    function removeFileInput(button) {
-        const fileInputGroup = button.parentElement;
-        fileInputGroup.remove();
-
-        previewImages();
-    }
-
-    function previewImages() {
-        const previewContainer = document.getElementById("imagePreviewContainer")
-
-        previewContainer.innerHTML = "";
-
-        const inputs = document.querySelectorAll(".file-input");
-
-        inputs.forEach(input => {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const img = document.createElement("img");
-
-                    img.src = e.target.result;
-                    img.style.width = "120px";
-                    img.style.height = "120px";
-                    img.style.objectFit = "cover";
-                    img.style.margin = "10px";
-
-                    previewContainer.appendChild(img);
-
-                }
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        });
-    }
-
-    document.getElementById("myDropzone").addEventListener("submit", function () {
-
-        document.getElementById("loading").style.display = "block";
-        document.getElementById("submitBtn").disabled = true;
-
-    });
-
-    const ttsRadio = document.getElementById("ttsRadio");
-    const uploadRadio = document.getElementById("uploadRadio");
-    const ttsSection = document.getElementById("ttsSection");
-    const uploadSection = document.getElementById("uploadSection");
-
-    ttsRadio.addEventListener("change", function () {
-        ttsSection.style.display = "block";
-        uploadSection.style.display = "none";
-    });
-    const manualMusicRadio = document.getElementById("manualMusicRadio");
-
-    const manualMusicSection = document.getElementById("manualMusicSection");
-
-    manualMusicRadio.addEventListener("change", function () {
-
-        manualMusicSection.style.display = "block";
-
-    });
-
-    document.querySelector('input[value="none"]').addEventListener("change", function () {
-
-        manualMusicSection.style.display = "none";
-
-    });
-
-    document.querySelector('input[value="ai"]').addEventListener("change", function () {
-
-        manualMusicSection.style.display = "none";
-
-    });
-
-    const volumeSlider = document.getElementById("musicVolume");
-
-    const volumeValue = document.getElementById("volumeValue");
-
-    volumeSlider.addEventListener("input", function () {
-
-        volumeValue.innerText = this.value + "%";
-
-    });
-
-    uploadRadio.addEventListener("change", function () {
-        ttsSection.style.display = "none";
-        uploadSection.style.display = "block";
-    });
-
-    document.getElementById("generateAiBtn").addEventListener("click", async function () {
-
-        this.disabled = true;
-        this.innerText = "Generating...";
-
-        try {
-            const formData = new FormData();
-
-            const inputs = document.querySelectorAll(".file-input");
-
-            let hasImage = false;
-
-            inputs.forEach((input) => {
-                if (input.files.length > 0) {
-                    hasImage = true;
-                }
-            });
-
-            if (!hasImage) {
-                alert("Please upload at least one image.");
-                return;
-            }
-
-            inputs.forEach((input) => {
-
-                if (input.files.length > 0) {
-
-                    formData.append("images", input.files[0]);
-
-                }
-
-            });
-
-            const response = await fetch("/generate-script", {
-
-                method: "POST",
-
-                body: formData
-
-            });
-
-            const textBox = document.getElementById("textInput");
-            const data = await response.json();
-            textBox.value = data.script;
-        }
-
-        catch (err) {
-            alert("AI generatin failed.")
-            console.log(err);
-        }
-        this.disabled = false;
-        this.innerText = "✨ Generate AI Script";
-
-    });
-
-    document.getElementById("generateHashtagsBtn").addEventListener("click", async function () {
-
-        const hashtagsBox = document.getElementById("hashtagsBox");
-
-        this.disabled = true;
-        this.innerText = "Generating...";
-
-        try {
-
-            const formData = new FormData();
-
-            const inputs = document.querySelectorAll(".file-input");
-
-            let hasImage = false;
-
-            inputs.forEach((input) => {
-
-                if (input.files.length > 0) {
-
-                    hasImage = true;
-                    formData.append("images", input.files[0]);
-
-                }
-
-            });
-
-            if (!hasImage) {
-
-                alert("Please upload at least one image.");
-
-                return;
-
-            }
-
-            const response = await fetch("/generate-hashtags", {
-
-                method: "POST",
-
-                body: formData
-
-            });
-
-            const data = await response.json();
-
-            hashtagsBox.value = data.hashtags;
-
-        }
-
-        catch (err) {
-
-            alert("Hashtag generation failed.");
-
-            console.log(err);
-
-        }
-
-        this.disabled = false;
-        this.innerText = "✨ Generate AI Hashtags";
-
-    });
-
-   </script>
+<script src="{{ url_for('static', filename='js/progress.js') }}"></script>
 {% endblock %}

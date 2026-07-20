@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, jsonify
+from flask import render_template, request, redirect, jsonify,url_for
 from app import app
 
 import os
@@ -12,10 +12,15 @@ from ai_service import (
     generate_script_from_images,
     generate_hashtags_from_images,
     recommend_music,
-    order_images
+    order_images,
+    recommend_transition
 )
 from audio_mixer import mix_audio
-
+from progress import (
+    update_progress,
+    get_progress,
+    clear_progress
+)
 print("RUNNING ROUTES.PY")
 
 @app.route("/")
@@ -54,12 +59,23 @@ def create():
             rec_id
         )
 
+        update_progress(
+            rec_id,
+            5,
+            "Preparing project..."
+        )
+
         os.makedirs(folder_path, exist_ok=True)
 
         # Save Images
         input_files = save_images(
             request,
             folder_path
+        )
+        update_progress(
+            rec_id,
+            15,
+            "Uploading images..."
         )
 
         try:
@@ -68,6 +84,12 @@ def create():
                 folder_path,
                 input_files
             )
+
+            update_progress(
+            rec_id,
+            30,
+            "Analyzing story..."
+        )
 
             print("AI Order:", ai_order)
 
@@ -98,6 +120,35 @@ def create():
             except Exception as e:
 
                 print("Invalid AI order:", e)
+
+            try:
+
+                transition = recommend_transition(
+                    folder_path,
+                    input_files
+                )
+                update_progress(
+                rec_id,
+                40,
+                "Choosing transitions..."
+            )
+
+            except Exception as e:
+
+                print("Transition recommendation failed:", e)
+
+                transition = "fade"
+
+            allowed = {
+                "fade",
+                "zoom",
+                "slide"
+            }
+
+            if transition not in allowed:
+                transition = "fade"
+
+            print("AI Transition:", transition)
 
         durations = []
 
@@ -147,6 +198,12 @@ def create():
 
         else:
             return "Invalid audio type.", 400
+        
+        update_progress(
+            rec_id,
+            55,
+            "Generating narration..."
+        )
         
        # -------------------------
         # Voice Audio
@@ -253,6 +310,17 @@ def create():
                         final_audio,
                         voice_audio
                     )
+                
+            update_progress(
+            rec_id,
+            70,
+            "Mixing audio..."
+            )
+        update_progress(
+            rec_id,
+            85,
+            "Rendering reel..."
+        )
 
         # create reel
         success = create_reel(
@@ -261,18 +329,29 @@ def create():
         reel_name,
         desc,
         durations,
-        input_files
+        input_files,
+        transition
         )
 
         if not success:
             return "Reel generation failed.", 500
 
-        return redirect("/gallery")
+        update_progress(
+            rec_id,
+            100,
+            "Completed!"
+        )
+
+        return jsonify({
+            "success": True,
+            "redirect": url_for("gallery")
+        })
 
     return render_template(
         "create.html",
         myid=myid
     )
+
 
 @app.route("/generate-script", methods=["POST"])
 def generate_ai_script():
@@ -414,3 +493,7 @@ def generate_ai_hashtags():
         if 'temp_dir' in locals():
             if os.path.exists(temp_dir):
                 os.rmdir(temp_dir)
+@app.route("/progress/<rec_id>")
+def progress(rec_id):
+
+    return jsonify(get_progress(rec_id))

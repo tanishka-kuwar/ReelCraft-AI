@@ -20,7 +20,8 @@ def create_reel(
     reel_name,
     caption_text,
     durations,
-    input_files
+    input_files,
+    transition
 ):
 
     os.makedirs("static/reels", exist_ok=True)
