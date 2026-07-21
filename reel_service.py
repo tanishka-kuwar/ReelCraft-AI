@@ -1,15 +1,39 @@
 import os
 import subprocess
 
+IMAGE_EXTENSIONS = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".bmp",
+    ".gif",
+    ".webp",
+    ".tif",
+    ".tiff"
+}
 
 def run(cmd):
 
+    print("=" * 100)
     print(cmd)
+    print("=" * 100)
 
     result = subprocess.run(
         cmd,
-        shell=True
+        shell=True,
+        capture_output=True,
+        text=True
     )
+
+    print("Return Code:", result.returncode)
+
+    if result.stdout:
+        print("STDOUT:")
+        print(result.stdout)
+
+    if result.stderr:
+        print("STDERR:")
+        print(result.stderr)
 
     return result.returncode == 0
 
@@ -33,10 +57,10 @@ def create_reel(
     # Create one video per image
     # ------------------------
 
-    for i, image in enumerate(input_files):
+    for i, media in enumerate(input_files):
 
-        image_path = os.path.abspath(
-            os.path.join(folder_path, image)
+        media_path = os.path.abspath(
+            os.path.join(folder_path, media)
         ).replace("\\", "/")
 
         temp_video = os.path.join(
@@ -46,18 +70,41 @@ def create_reel(
 
         temp_videos.append(temp_video)
 
-        cmd = (
-            f'ffmpeg -y '
-            f'-loop 1 '
-            f'-i "{image_path}" '
-            f'-t {durations[i]} '
-            f'-vf "scale=1080:1920:force_original_aspect_ratio=decrease,'
-            f'pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black" '
-            f'-r 30 '
-            f'-pix_fmt yuv420p '
-            f'-c:v libx264 '
-            f'"{temp_video}"'
-        )
+        extension = os.path.splitext(media)[1].lower()
+
+        # ---------------- IMAGE ----------------
+        if extension in IMAGE_EXTENSIONS:
+
+            cmd = (
+                f'ffmpeg -y '
+                f'-loop 1 '
+                f'-i "{media_path}" '
+                f'-t {durations[i]} '
+                f'-vf "scale=1080:1920:force_original_aspect_ratio=decrease,'
+                f'pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black" '
+                f'-r 30 '
+                f'-pix_fmt yuv420p '
+                f'-c:v libx264 '
+                f'"{temp_video}"'
+            )
+
+        # ---------------- VIDEO ----------------
+        else:
+            print("=" * 50)
+            print("VIDEO:", media)
+            print("Selected Duration:", durations[i])
+            print("=" * 50)
+            cmd = (
+                f'ffmpeg -y '
+                f'-i "{media_path}" '
+                f'-vf "scale=1080:1920:force_original_aspect_ratio=decrease,'
+                f'pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black" '
+                f'-r 30 '
+                f'-pix_fmt yuv420p '
+                f'-c:v libx264 '
+                f'-c:a aac '
+                f'"{temp_video}"'
+            )
 
         if not run(cmd):
             return False
@@ -111,6 +158,10 @@ def create_reel(
         "audio.mp3"
     )
 
+    has_audio = os.path.exists(audio)
+
+    print("Has Audio:", has_audio)
+
     output = os.path.join(
         "static",
         "reels",
@@ -136,24 +187,44 @@ def create_reel(
     with open(caption_file, "w", encoding="utf-8") as f:
         f.write(caption_text)
 
-    cmd = (
-        f'ffmpeg -y '
-        f'-i "{slideshow}" '
-        f'-i "{audio}" '
-        f'-vf "drawtext='
-        f'textfile=\'{caption_file}\':'
-        f'fontcolor=white:'
-        f'fontsize=48:'
-        f'box=1:'
-        f'boxcolor=black@0.5:'
-        f'boxborderw=10:'
-        f'x=(w-text_w)/2:'
-        f'y=h-150" '
-        f'-c:v libx264 '
-        f'-c:a aac '
-        f'-shortest '
-        f'"{output}"'
-    )
+    if has_audio:
+
+        cmd = (
+            f'ffmpeg -y '
+            f'-i "{slideshow}" '
+            f'-i "{audio}" '
+            f'-vf "drawtext='
+            f'textfile=\'{caption_file}\':'
+            f'fontcolor=white:'
+            f'fontsize=48:'
+            f'box=1:'
+            f'boxcolor=black@0.5:'
+            f'boxborderw=10:'
+            f'x=(w-text_w)/2:'
+            f'y=h-150" '
+            f'-c:v libx264 '
+            f'-c:a aac '
+            f'-shortest '
+            f'"{output}"'
+        )
+
+    else:
+
+        cmd = (
+            f'ffmpeg -y '
+            f'-i "{slideshow}" '
+            f'-vf "drawtext='
+            f'textfile=\'{caption_file}\':'
+            f'fontcolor=white:'
+            f'fontsize=48:'
+            f'box=1:'
+            f'boxcolor=black@0.5:'
+            f'boxborderw=10:'
+            f'x=(w-text_w)/2:'
+            f'y=h-150" '
+            f'-c:v libx264 '
+            f'"{output}"'
+        )
     print("=" * 100)
     print(cmd)
     print("=" * 100)

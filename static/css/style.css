@@ -1,7 +1,27 @@
 :root{
-    --primary-color: rgb(29, 29, 243);
-    --secondary-color: rgb(55, 55, 172);
-    --accent-color:rgb(130, 16, 175);
+    --bg:#0F172A;
+    --surface:#1E293B;
+    --card:#111827;
+
+    --primary:#8B5CF6;
+    --primary-hover:#7C3AED;
+
+    --secondary:#3B82F6;
+
+    --success:#22C55E;
+    --danger:#EF4444;
+
+    --text:#F8FAFC;
+    --text-muted:#CBD5E1;
+
+    --border:rgba(255,255,255,.08);
+
+    --shadow:
+        0 12px 40px rgba(0,0,0,.35);
+
+    --radius:18px;
+
+    --transition:.3s ease;
 }
 body{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

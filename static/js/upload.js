@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name="file${fileCounter}"
             type="file"
             class="file-input"
-            accept="image/*"
+            accept="image/*,video/*"
             onchange="previewImages()"
         >
 
@@ -68,15 +68,55 @@ document.addEventListener("DOMContentLoaded", function () {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    const img = document.createElement("img");
+                    const file = input.files[0];
+                    const durationSelect = input.parentElement.querySelector(".duration-select");
 
-                    img.src = e.target.result;
-                    img.style.width = "120px";
-                    img.style.height = "120px";
-                    img.style.objectFit = "cover";
-                    img.style.margin = "10px";
+                    if (file.type.startsWith("video/")) {
 
-                    previewContainer.appendChild(img);
+                        durationSelect.style.pointerEvents = "none";
+                        durationSelect.style.opacity = "0.6";
+                        durationSelect.options[0].text = "Original";
+
+                    } else {
+
+                        durationSelect.style.pointerEvents = "auto";
+                        durationSelect.style.opacity = "1";
+                        durationSelect.options[0].text = "1 sec";
+
+                    }
+
+                    if (file.type.startsWith("image/")) {
+
+                        const img = document.createElement("img");
+
+                        img.src = e.target.result;
+
+                        img.style.width = "120px";
+                        img.style.height = "120px";
+                        img.style.objectFit = "cover";
+                        img.style.margin = "10px";
+
+                        previewContainer.appendChild(img);
+
+                    }
+
+                    else if (file.type.startsWith("video/")) {
+
+                        const video = document.createElement("video");
+
+                        video.src = e.target.result;
+
+                        video.controls = true;
+                        video.muted = true;
+
+                        video.style.width = "120px";
+                        video.style.height = "120px";
+                        video.style.objectFit = "cover";
+                        video.style.margin = "10px";
+
+                        previewContainer.appendChild(video);
+
+                    }
 
                 }
 
@@ -85,13 +125,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function processImages(files) {
+    function processMedia(files) {
 
         const fileInputs = document.getElementById("fileInputs");
 
         for (const file of files) {
 
-            if (!file.type.startsWith("image/"))
+            if (
+                !file.type.startsWith("image/") &&
+                !file.type.startsWith("video/")
+            )
                 continue;
 
             const dt = new DataTransfer();
@@ -107,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 name="file${fileCounter}"
                 type="file"
                 class="file-input"
-                accept="image/*"
+                accept="image/*,video/*"
             >
 
             <label>Duration</label>
@@ -137,6 +180,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
             input.files = dt.files;
 
+            const durationSelect = div.querySelector(".duration-select");
+
+            if (file.type.startsWith("video/")) {
+
+                durationSelect.disabled = true;
+                durationSelect.options[0].text = "Original";
+
+            } else {
+
+                durationSelect.disabled = false;
+                durationSelect.options[0].text = "1 sec";
+
+            }
+
             fileCounter++;
 
         }
@@ -156,7 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     hiddenInput.addEventListener("change", function () {
 
-        processImages(this.files);
+        processMedia(this.files);
 
     });
 
@@ -180,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         dropZone.classList.remove("dragover");
 
-        processImages(e.dataTransfer.files);
+        processMedia(e.dataTransfer.files);
 
     });
 

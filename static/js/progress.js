@@ -12,6 +12,6 @@ function updateProgress(percent, text) {
 
     bar.textContent = percent + "%";
 
-    label.textContents = text;
+    label.textContent = text;
 
 }

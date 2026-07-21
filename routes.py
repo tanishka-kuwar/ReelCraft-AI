@@ -80,16 +80,35 @@ def create():
 
         try:
 
-            ai_order = order_images(
-                folder_path,
-                input_files
-            )
+            image_files = [
+                f for f in input_files
+                if f.lower().endswith(
+                    (
+                        ".jpg",
+                        ".jpeg",
+                        ".png",
+                        ".bmp",
+                        ".gif",
+                        ".webp",
+                        ".tif",
+                        ".tiff"
+                    )
+                )
+            ]
+
+            if image_files:
+                ai_order = order_images(
+                    folder_path,
+                    image_files
+                )
+            else:
+                ai_order = ""
 
             update_progress(
-            rec_id,
-            30,
-            "Analyzing story..."
-        )
+                rec_id,
+                30,
+                "Analyzing story..."
+            )
 
             print("AI Order:", ai_order)
 
@@ -99,6 +118,8 @@ def create():
 
             ai_order = ""
         
+        transition = "fade"
+
         if ai_order:
 
             try:
@@ -125,7 +146,7 @@ def create():
 
                 transition = recommend_transition(
                     folder_path,
-                    input_files
+                    image_files
                 )
                 update_progress(
                 rec_id,
@@ -176,34 +197,30 @@ def create():
             f.write(desc)
 
         # Audio
+        voice_audio = False
+
         if audio_type == "upload":
 
-            success = save_audio(
-                request,
-                folder_path
-            )
+            success = save_audio(request, folder_path)
 
-            if not success:
-                return "Please upload an audio file.", 400
+            if success:
+                voice_audio = True
+
 
         elif audio_type == "tts":
 
-            if not desc:
-                return "Please enter text.", 400
+            if desc.strip():
 
-            text_to_speech_file(
-                desc,
-                rec_id
-            )
+                text_to_speech_file(
+                    desc,
+                    rec_id
+                )
 
-        else:
-            return "Invalid audio type.", 400
-        
-        update_progress(
-            rec_id,
-            55,
-            "Generating narration..."
-        )
+                voice_audio = True
+
+
+        # If no upload and no text,
+        # simply continue without narration.
         
        # -------------------------
         # Voice Audio
@@ -283,7 +300,11 @@ def create():
         # Mix Voice + Background Music
         # -------------------------
 
-        if music_audio:
+        if (
+                voice_audio
+                and music_audio
+                and os.path.exists(os.path.join(folder_path, "audio.mp3"))
+            ):
 
             if music_audio and os.path.exists(music_audio):
 

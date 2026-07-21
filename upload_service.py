@@ -12,12 +12,26 @@ ALLOWED_IMAGE_EXTENSIONS = { "jpg",
                             "webp",
                             "tiff",
                             "tif"}
+ALLOWED_VIDEO_EXTENSIONS = {
+    "mp4",
+    "mov",
+    "avi",
+    "mkv",
+    "webm",
+    "m4v"
+}
 
 
 def allowed_file(filename):
+
+    if "." not in filename:
+        return False
+
+    ext = filename.rsplit(".", 1)[1].lower()
+
     return (
-        "." in filename
-        and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
+        ext in ALLOWED_IMAGE_EXTENSIONS
+        or ext in ALLOWED_VIDEO_EXTENSIONS
     )
 
 
@@ -39,23 +53,36 @@ def save_images(request, folder_path):
         name = os.path.splitext(file.filename)[0]
         name = re.sub(r'[^A-Za-z0-9_-]', "_", name)
 
-        filename = f"{name}.jpg"
+        extension = file.filename.rsplit(".", 1)[1].lower()
 
-        path = os.path.join(folder_path, filename)
+        # ---------- IMAGE ----------
+        if extension in ALLOWED_IMAGE_EXTENSIONS:
 
-        img = Image.open(file)
+            filename = f"{name}.jpg"
 
-        # Convert images with transparency correctly
-        if img.mode in ("RGBA", "P"):
-            img = img.convert("RGB")
+            path = os.path.join(folder_path, filename)
+
+            img = Image.open(file)
+
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+            else:
+                img = img.convert("RGB")
+
+            img.thumbnail((1920, 1920))
+
+            img.save(path, "JPEG", quality=95)
+
+        # ---------- VIDEO ----------
         else:
-            img = img.convert("RGB")
 
-        img.thumbnail((1920, 1920))
-        img.save(path, "JPEG", quality=95)
+            filename = secure_filename(file.filename)
+
+            path = os.path.join(folder_path, filename)
+
+            file.save(path)
 
         input_files.append(filename)
-
     return input_files
 
 def save_audio(request, folder_path):
