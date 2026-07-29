@@ -11,199 +11,405 @@ Create Reel - ReelCraft AI
 {% block content %}
 <section class="upload-section">
     <div class="container">
-        <div class="upload-container">
-            <h1 class="upload-title">Create Your Reel</h1>
-            <p class="upload-instructions">
-                Upload images and generate engaging reels with narration, captions, and custom audio.
-            </p>
+        <div class="dashboard">
 
-            <form action="/create" enctype="multipart/form-data" method="post" class="dropzone" id="myDropzone">
+            <!-- LEFT PANEL -->
 
-                <div class="fallback">
-                    <div id="dropZone" class="drop-zone">
+            <div class="dashboard-left">
+                <h1 class="upload-title">Create Your Reel</h1>
+                <p class="upload-instructions">
+                    Upload images and generate engaging reels with narration, captions, and custom audio.
+                </p>
 
-                        <h3>📁 Drag & Drop Images Here</h3>
+                <form action="/create" enctype="multipart/form-data" method="post" class="dropzone" id="myDropzone">
 
-                        <p>or Click to Browse</p>
+
+                    <div class="dashboard-card">
+
+                        <h2 class="card-title">
+
+                            📁 Upload Files
+
+                        </h2>
+
+                        <div class="fallback">
+                            <div id="dropZone" class="drop-zone">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+
+                                <h2>Drag & Drop Files</h2>
+
+                                <p>
+
+                                    Upload Images or Videos
+
+                                </p>
+
+                                <span>
+
+                                    PNG • JPG • JPEG • MP4
+
+                                </span>
+
+                            </div>
+                            <input type="file" id="hiddenImageInput" accept="image/*,video/*" multiple hidden>
+                            <div id="fileInputs">
+                                <div class="file-input-group">
+
+                                    <input name="uuid" type="hidden" value="{{myid}}" />
+
+                                    <input name="file1" type="file" class="file-input" accept="image/*,video/*"
+                                        onchange="previewImages()">
+
+                                    <label>Duration</label>
+
+                                    <select name="duration1" class="duration-select">
+                                        <option value="1">1 sec</option>
+                                        <option value="2">2 sec</option>
+                                        <option value="3">3 sec</option>
+                                        <option value="4">4 sec</option>
+                                        <option value="5">5 sec</option>
+                                    </select>
+
+                                    <button type="button" class="remove-file-btn" onclick="removeFileInput(this)"
+                                        disabled>
+                                    </button>
+
+                                </div>
+                            </div>
+
+                            <button type="button" class="add-file-btn" onclick="addFileInput()">+Add File</button>
+
+                            <div id="imagePreviewContainer"></div>
+                        </div>
+
+
 
                     </div>
-                    <input type="file" id="hiddenImageInput" accept="image/*,video/*" multiple hidden>
-                    <div id="fileInputs">
-                        <div class="file-input-group">
 
-                            <input name="uuid" type="hidden" value="{{myid}}" />
 
-                            <input name="file1" type="file" class="file-input" accept="image/*,video/*" onchange="previewImages()">
+                    <div class="dashboard-card">
 
-                            <label>Duration</label>
+                        <h2 class="card-title">
 
-                            <select name="duration1" class="duration-select">
-                                <option value="1">1 sec</option>
-                                <option value="2">2 sec</option>
-                                <option value="3">3 sec</option>
-                                <option value="4">4 sec</option>
-                                <option value="5">5 sec</option>
-                            </select>
+                            🎤 AI Voice
 
-                            <button type="button" class="remove-file-btn" onclick="removeFileInput(this)" disabled>
+                        </h2>
+
+                        <div class="text-input-container">
+
+                            <h3>🎤 Voice</h3>
+
+                            <div class="option-group">
+
+                                <label class="option-card">
+
+                                    <input type="radio" id="ttsRadio" name="audio_type" value="tts" checked>
+
+                                    <div class="option-content">
+
+                                        <i class="fas fa-robot"></i>
+
+                                        <div>
+
+                                            <h4>AI Voice</h4>
+
+                                            <p>Generate narration automatically</p>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                                <label class="option-card">
+
+                                    <input type="radio" id="uploadRadio" name="audio_type" value="upload">
+
+                                    <div class="option-content">
+
+                                        <i class="fas fa-microphone"></i>
+
+                                        <div>
+
+                                            <h4>Upload Audio</h4>
+
+                                            <p>Use your own MP3 or WAV</p>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                            </div>
+                            <br><br>
+
+                            <div id="ttsSection">
+
+                                <textarea class="text-input" id="textInput" name="text"
+                                    placeholder="Generate or edit your narration..." rows="5"></textarea>
+                                <button type="button" id="generateAiBtn" class="ai-btn">
+                                    <i class="fas fa-wand-magic-sparkles"></i>
+                                    Generate AI Script
+                                </button>
+                            </div>
+
+                            <div id="uploadSection" style="display:none;">
+
+                                <input type="file" name="audio_file" accept=".mp3,.wav">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+
+                    <div class="dashboard-card">
+
+                        <h2 class="card-title">
+
+                            🎵 Background Music
+
+                        </h2>
+
+                        <div class="text-input-container">
+
+                            <h3>🎵 Background Music</h3>
+
+                            <div class="option-group">
+
+                                <label class="option-card">
+
+                                    <input type="radio" name="music_type" value="none" checked>
+
+                                    <div class="option-content">
+
+                                        <i class="fas fa-ban"></i>
+
+                                        <div>
+
+                                            <h4>No Music</h4>
+
+                                            <p>Only narration</p>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                                <label class="option-card">
+
+                                    <input type="radio" name="music_type" value="ai">
+
+                                    <div class="option-content">
+
+                                        <i class="fas fa-wand-magic-sparkles"></i>
+
+                                        <div>
+
+                                            <h4>AI Recommendation</h4>
+
+                                            <p>Best music selected automatically</p>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                                <label class="option-card">
+
+                                    <input id="manualMusicRadio" type="radio" name="music_type" value="manual">
+
+                                    <div class="option-content">
+
+                                        <i class="fas fa-music"></i>
+
+                                        <div>
+
+                                            <h4>Choose Yourself</h4>
+
+                                            <p>Select a music category</p>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                            </div>
+                            <br><br>
+
+                            <div id="manualMusicSection" style="display:none;">
+
+                                <select id="musicSelect" name="selected_music">
+
+                                    <option value="chill">Chill</option>
+                                    <option value="travel">Travel</option>
+                                    <option value="happy">Happy</option>
+                                    <option value="cinematic">Cinematic</option>
+                                    <option value="emotional">Emotional</option>
+                                    <option value="energetic">Energetic</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <hr>
+
+                    <div class="text-input-container">
+
+                        <h3>🔊 Background Music Volume</h3>
+
+                        <input type="range" id="musicVolume" name="music_volume" min="0" max="100" value="25">
+
+                        <span id="volumeValue">25%</span>
+
+                    </div>
+
+
+                    <div class="dashboard-card">
+
+                        <h2 class="card-title">
+
+                            🏷 AI Hashtags
+
+                        </h2>
+                        <div class="text-input-container">
+
+                            <label>AI Hashtags</label>
+
+                            <textarea id="hashtagsBox" rows="6" readonly
+                                placeholder="Click 'Generate AI Hashtags'"></textarea>
+
+                            <button type="button" id="generateHashtagsBtn" class="ai-btn">
+                                <i class="fas fa-hashtag"></i>
+                                Generate AI Hashtags
                             </button>
 
                         </div>
-                    </div>
 
-                    <button type="button" class="add-file-btn" onclick="addFileInput()">+Add File</button>
-
-                    <div id="imagePreviewContainer"></div>
-                </div>
-
-                <div class="text-input-container">
-
-                    <h3>🎤 Voice</h3>
-
-                    <label>
-                        <input type="radio" id="ttsRadio" name="audio_type" value="tts" checked>
-                        AI Voice (TTS)
-                    </label>
-
-                    <br>
-
-                    <label>
-                        <input type="radio" id="uploadRadio" name="audio_type" value="upload">
-                        Upload My Audio
-                    </label>
-
-                    <br><br>
-
-                    <div id="ttsSection">
-
-                        <textarea class="text-input" id="textInput" name="text"
-                            placeholder="Generate or edit your narration..." rows="5"></textarea>
-                        <button type="button" id="generateAiBtn">
-                            ✨ Generate AI Script
-                        </button>
-                    </div>
-
-                    <div id="uploadSection" style="display:none;">
-
-                        <input type="file" name="audio_file" accept=".mp3,.wav">
 
                     </div>
 
-                </div>
+                    <div class="dashboard-card">
 
-                <hr>
+                        <h2 class="card-title">
 
-                <div class="text-input-container">
+                            📝 Reel Details
 
-                    <h3>🎵 Background Music</h3>
+                        </h2>
+                        <div class="text-input-container">
+                            <label>Reel Name</label>
+                            <input type="text" name="reel_name" placeholder="Enter Reel Name" required>
+                        </div>
 
-                    <label>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">Create Reel</button>
 
-                        <input type="radio" name="music_type" value="none" checked>
+                    <div id="loading" style="display:none; margin-top:20px;">
 
-                        None
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
 
-                    </label>
+                            <div class="spinner"></div>
 
-                    <br>
+                            <strong id="progressText">
+                                Preparing...
+                            </strong>
 
-                    <label>
+                        </div>
 
-                        <input type="radio" name="music_type" value="ai">
+                        <div class="progress" style="height:25px;">
 
-                        AI Recommend
+                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                                role="progressbar" style="width:0%;">
 
-                    </label>
+                                0%
 
-                    <br>
+                            </div>
 
-                    <label>
+                        </div>
 
-                        <input type="radio" id="manualMusicRadio" name="music_type" value="manual">
+                    </div>
+                </form>
 
-                        Choose Myself
+            </div>
 
-                    </label>
+            <!-- RIGHT PANEL -->
 
-                    <br><br>
+            <div class="dashboard-right">
 
-                    <div id="manualMusicSection" style="display:none;">
+                <div class="preview-card">
 
-                        <select id="musicSelect" name="selected_music">
+                    <h2>📱 Reel Preview</h2>
 
-                            <option value="chill">Chill</option>
-                            <option value="travel">Travel</option>
-                            <option value="happy">Happy</option>
-                            <option value="cinematic">Cinematic</option>
-                            <option value="emotional">Emotional</option>
-                            <option value="energetic">Energetic</option>
+                    <div class="phone-preview">
 
-                        </select>
+                        <i class="fas fa-photo-video"></i>
+
+                        <p>
+
+                            Upload images & videos
+
+                            to preview here
+
+                        </p>
 
                     </div>
 
-                </div>
+                    <div class="summary">
 
-                <hr>
+                        <div>
 
-                <div class="text-input-container">
+                            <span>Files</span>
 
-                    <h3>🔊 Background Music Volume</h3>
+                            <strong id="fileCount">
 
-                    <input type="range" id="musicVolume" name="music_volume" min="0" max="100" value="25">
+                                0
 
-                    <span id="volumeValue">25%</span>
+                            </strong>
 
-                </div>
+                        </div>
 
+                        <div>
 
-                <div class="text-input-container">
+                            <span>Music</span>
 
-                    <label>AI Hashtags</label>
+                            <strong>
 
-                    <textarea id="hashtagsBox" rows="6" readonly placeholder="Click 'Generate AI Hashtags'"></textarea>
+                                Auto
 
-                    <button type="button" id="generateHashtagsBtn">
-                        ✨ Generate AI Hashtags
-                    </button>
+                            </strong>
 
-                </div>
+                        </div>
 
+                        <div>
 
-                <div class="text-input-container">
-                    <label>Reel Name</label>
-                    <input type="text" name="reel_name" placeholder="Enter Reel Name" required>
-                </div>
+                            <span>Voice</span>
 
-                <button type="submit" class="submit-btn" id="submitBtn">Create Reel</button>
+                            <strong>
 
-                <div id="loading" style="display:none; margin-top:20px;">
+                                AI
 
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-
-                        <div class="spinner"></div>
-
-                        <strong id="progressText">
-                            Preparing...
-                        </strong>
-
-                    </div>
-
-                    <div class="progress" style="height:25px;">
-
-                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
-                            role="progressbar" style="width:0%;">
-
-                            0%
+                            </strong>
 
                         </div>
 
                     </div>
 
                 </div>
-            </form>
+
+            </div>
+
         </div>
-    </div>
+
 </section>
 {% endblock %}
 

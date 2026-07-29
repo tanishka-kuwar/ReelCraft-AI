@@ -1,58 +1,435 @@
 {% extends 'base.html' %}
 
- {% block title %}
-    ReelCraft AI - Create Amazing Instagram Reels
-{% endblock %} 
+{% block title %}
+ReelCraft AI - Create Amazing Instagram Reels
+{% endblock %}
 
 {% block content %}
-    <section class="hero-section">
-        <div class="container">
-            <h1 class="hero-title">Create Amazing Instagram Reels with AI</h1>
-            <p class="hero-subtitle">Transform your images into engaging AI-powered reels with narration, captions, and custom audio.</p>
-            <a href="/create" class="cta-button">Start Creating Now</a>
-        </div>
-    </section>
+<section class="hero-section reveal">
 
-    <section class="features-section">
-        <div class="container">
+    <div class="container">
 
-            <div class="row g-4">
-                <div class="feature-card">
-                    <i class="fas fa-magic feature-icon"></i>
-                    <h3>AI-Powered Editing</h3>
-                    <p>Let our AI analyze and enhance your videos automatically</p>
+        <div class="hero-content">
+
+            <!-- LEFT -->
+
+            <div class="hero-left">
+
+                <span class="hero-badge">
+                    🚀 AI Powered Reel Generator
+                </span>
+
+                <h1 class="hero-title">
+                    Create Stunning
+                    <span>AI Reels</span>
+                    from Images &
+                    Videos
+                </h1>
+
+                <p class="hero-subtitle">
+
+                    Turn your photos and videos into
+                    professional social media reels using
+                    AI narration, smart story ordering,
+                    captions, music and transitions.
+
+                </p>
+
+                <div class="hero-features">
+
+                    <span>✨ AI Voice</span>
+
+                    <span>🎵 Smart Music</span>
+
+                    <span>🎬 Story Ordering</span>
+
+                    <span>💬 Captions</span>
+
                 </div>
+
+                <div class="hero-buttons">
+
+                    <a href="/create" class="btn-primary-custom">
+
+                        Create Reel
+
+                    </a>
+
+                    <a href="/gallery" class="btn-secondary-custom">
+
+                        View Gallery
+
+                    </a>
+
+                </div>
+
             </div>
 
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <i class="fas fa-film feature-icon"></i>
-                    <h3>Smart Stitching</h3>
-                    <p>Seamlessly combine multiple clips into perfect reels</p>
-                </div>
-            </div>
+            <!-- RIGHT -->
 
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <i class="fas fa-music feature-icon"></i>
-                    <h3>Music Integration</h3>
-                    <p>Add trending music and sound effects to your reels</p>
+            <div class="hero-right">
+
+                <div class="hero-phone">
+
+                    <div class="phone-screen">
+
+                        <i class="fas fa-clapperboard"></i>
+
+                        <h3>AI Reel</h3>
+
+                        <p>
+
+                            Your AI generated
+                            reel preview
+                            appears here.
+
+                        </p>
+
+                    </div>
+
                 </div>
+
             </div>
 
         </div>
-    </section>
 
-    <section class="showcase-section">
-        <div class="container">
-            <h2 class="showcase-title">Featured Creations</h2>
-            <div class="image-grid">
-                <img src="{{ url_for('static',filename='1.jpg' ) }}" alt="Reel Ex1" class="showcase-image"></img>
-                <img src="{{ url_for('static',filename='2.jpg' ) }}" alt="Reel Ex2" class="showcase-image"></img>
-                <img src="{{ url_for('static',filename='3.jpg' ) }}" alt="Reel Ex3" class="showcase-image"></img>
-                <img src="{{ url_for('static',filename='4.jpg' ) }}" alt="Reel Ex4" class="showcase-image"></img>
-                <img src="{{ url_for('static',filename='5.jpg' ) }}" alt="Reel Ex5" class="showcase-image"></img>
-            </div>
+    </div>
+
+</section>
+
+
+<section class="workflow-section reveal">
+
+    <div class="container">
+
+        <div class="section-header">
+
+            <span class="section-tag">How It Works</span>
+
+            <h2>Creating AI Reels Has Never Been Easier</h2>
+
+            <p>
+                Generate professional social media reels in just three simple
+                steps.
+            </p>
+
         </div>
-    </section>
+
+        <div class="workflow-grid">
+
+            <div class="workflow-card">
+
+                <div class="workflow-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+
+                <h3>Upload</h3>
+
+                <p>
+                    Upload your images and videos. Mix photos, clips,
+                    and music effortlessly.
+                </p>
+
+            </div>
+
+            <div class="workflow-arrow">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+
+            <div class="workflow-card">
+
+                <div class="workflow-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+
+                <h3>AI Processing</h3>
+
+                <p>
+                    Gemini AI creates the story, narration,
+                    captions and recommends music automatically.
+                </p>
+
+            </div>
+
+            <div class="workflow-arrow">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+
+            <div class="workflow-card">
+
+                <div class="workflow-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+
+                <h3>Export</h3>
+
+                <p>
+                    Download your finished reel in high quality
+                    and share it instantly.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<section class="stats-section reveal">
+
+    <div class="container">
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+
+                <h2>500+</h2>
+
+                <p>AI Reels Generated</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h2>99%</h2>
+
+                <p>User Satisfaction</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h2>6+</h2>
+
+                <p>AI Features</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h2>24/7</h2>
+
+                <p>Available</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="features-section reveal">
+
+    <div class="container">
+
+        <div class="section-header">
+
+            <span class="section-tag">Features</span>
+
+            <h2>Everything You Need to Create Professional AI Reels</h2>
+
+            <p>
+                ReelCraft AI combines artificial intelligence with powerful
+                video processing to help you create engaging content in minutes.
+            </p>
+
+        </div>
+
+        <div class="features-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-microphone"></i></div>
+                <h3>AI Narration</h3>
+                <p>Generate natural voiceovers for your reels automatically.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                <h3>Smart Story Ordering</h3>
+                <p>AI arranges your images and videos into an engaging sequence.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-music"></i></div>
+                <h3>Music Recommendation</h3>
+                <p>Choose background music that matches the mood of your reel.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-closed-captioning"></i></div>
+                <h3>Automatic Captions</h3>
+                <p>Create subtitles automatically to improve engagement.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-photo-video"></i></div>
+                <h3>Mixed Media Support</h3>
+                <p>Combine images and videos into one smooth cinematic reel.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Fast Export</h3>
+                <p>Generate and download high-quality reels within seconds.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="showcase-section reveal" >
+
+    <div class="container">
+
+        <div class="section-header">
+
+            <span class="section-tag">
+                Featured Reels
+            </span>
+
+            <h2>
+                See What You Can Create
+            </h2>
+
+            <p>
+
+                Beautiful AI generated reels built
+                using narration, captions,
+                smart story ordering and music.
+
+            </p>
+
+        </div>
+
+        <div class="showcase-grid">
+
+            <div class="showcase-card">
+
+                <div class="showcase-image">
+
+                    <img src="{{ url_for('static',filename='1.jpg') }}">
+
+                    <div class="play-button">
+
+                        <i class="fas fa-play"></i>
+
+                    </div>
+
+                </div>
+
+                <div class="showcase-content">
+
+                    <h3>Travel Story</h3>
+
+                    <p>AI Narration • Captions</p>
+
+                </div>
+
+            </div>
+
+            <div class="showcase-card">
+
+                <div class="showcase-image">
+
+                    <img src="{{ url_for('static',filename='2.jpg') }}">
+
+                    <div class="play-button">
+
+                        <i class="fas fa-play"></i>
+
+                    </div>
+
+                </div>
+
+                <div class="showcase-content">
+
+                    <h3>Product Promotion</h3>
+
+                    <p>Music • AI Story</p>
+
+                </div>
+
+            </div>
+
+            <div class="showcase-card">
+
+                <div class="showcase-image">
+
+                    <img src="{{ url_for('static',filename='3.jpg') }}">
+
+                    <div class="play-button">
+
+                        <i class="fas fa-play"></i>
+
+                    </div>
+
+                </div>
+
+                <div class="showcase-content">
+
+                    <h3>Birthday Memories</h3>
+
+                    <p>Mixed Media</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="cta-section reveal">
+
+    <div class="container">
+
+        <div class="cta-box">
+
+            <span class="section-tag">
+                Ready to Start?
+            </span>
+
+            <h2>
+                Create Stunning AI Reels
+                in Minutes
+            </h2>
+
+            <p>
+
+                Upload your images and videos,
+                let AI do the editing,
+                and download a professional reel
+                in just a few clicks.
+
+            </p>
+
+            <div class="cta-buttons">
+
+                <a href="/create"
+                   class="btn-primary-custom">
+
+                    🚀 Start Creating
+
+                </a>
+
+                <a href="/gallery"
+                   class="btn-secondary-custom">
+
+                    View Gallery
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
 {% endblock %}

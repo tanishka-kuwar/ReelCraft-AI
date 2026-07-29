@@ -6,31 +6,126 @@ Gallery - ReelCraft AI
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/gallery.css') }}">
- {% endblock %} 
- 
- {% block content %}
-    <div class="container gallery-container">
-<h1 class="gallery-title">Reel Gallery</h1>
-<div class="gallery-grid">
-    <!-- Example reels - these would be populated dynamically in a real application -->
-    {% for reel in reels %}
-    <div class="reel-card">
-        <video src="/static/reels/{{ reel }}" controls></video>
+{% endblock %}
 
-        <p class="reel-name">{{ reel }}</p>
+{% block content %}
+<div class="container gallery-container">
 
-        <div class="reel-actions">
-            <a href="static/reels/{{ reel }}" download class="download-btn">Download</a>
-            <a href="#" class="delete-btn" onclick="openDeleteModal('{{ reel }}')">
-                Delete
-            </a>
+    <div class="gallery-header">
+
+        <span class="hero-badge">
+
+            ✨ AI Media Library
+
+        </span>
+
+        <h1>
+
+            Reel Gallery
+
+        </h1>
+
+        <p>
+
+            Browse, download and manage all your AI generated reels.
+
+        </p>
+        <div class="gallery-stats">
+
+            <div class="stat-card">
+
+                <h2>
+
+                    {{ reels|length }}
+
+                </h2>
+
+                <p>Total Reels</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h2>
+
+                    AI
+
+                </h2>
+
+                <p>Generated</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h2>
+
+                    24/7
+
+                </h2>
+
+                <p>Available</p>
+
+            </div>
+
+        </div>
+        {% if reels|length == 0 %}
+
+        <div class="empty-gallery">
+
+            <i class="fas fa-film"></i>
+
+            <h2>
+
+                No reels yet
+
+            </h2>
+
+            <p>
+
+                Create your first AI Reel.
+
+            </p>
+
         </div>
 
+        {% endif %}
     </div>
-    {% endfor %}
+    <div class="gallery-grid">
+        <!-- Example reels - these would be populated dynamically in a real application -->
+        {% for reel in reels %}
+        <div class="reel-card">
+            <video src="/static/reels/{{ reel }}" controls></video>
+
+            <p class="reel-name">
+
+    {{ reel.replace(".mp4","")[:20] }}{% if reel|length > 20 %}...{% endif %}
+
+</p>
+
+            <div class="reel-actions">
+                <a href="static/reels/{{ reel }}" download class="download-btn">
+
+                    <i class="fas fa-download"></i>
+
+                    Download
+
+                </a>
+
+                <a href="#" class="delete-btn" onclick="openDeleteModal('{{ reel }}')">
+
+                    <i class="fas fa-trash"></i>
+
+                    Delete
+
+                </a>
+            </div>
+
+        </div>
+        {% endfor %}
 
 
-</div>
+    </div>
 </div>
 
 <!-- Delete confirmation Modal -->
@@ -41,7 +136,7 @@ Gallery - ReelCraft AI
 
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeDeleteModal()">Cancle</button>
-            
+
             <a id="confirmDeleteBtn" class="btn-delete">Yes, Delete</a>
         </div>
     </div>
@@ -51,17 +146,17 @@ Gallery - ReelCraft AI
 
 {% block extra_js %}
 <script>
-    function openDeleteModal(reelName){
+    function openDeleteModal(reelName) {
         const modal = document.getElementById("deleteModal");
         const deleteBtn = document.getElementById("confirmDeleteBtn");
-         
+
         deleteBtn.href = "/delete/" + reelName;
         modal.style.display = "flex";
     }
 
-    function closeDeleteModal(){
+    function closeDeleteModal() {
         document.getElementById("deleteModal").style.display = "none";
     }
 
-    </script>
+</script>
 {% endblock %}

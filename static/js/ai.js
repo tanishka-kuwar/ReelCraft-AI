@@ -1,11 +1,15 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("generateAiBtn").addEventListener("click", async function () {
+    const generateAiBtn = document.getElementById("generateAiBtn");
 
-        this.disabled = true;
-        this.innerText = "Generating...";
+    generateAiBtn.addEventListener("click", async function () {
 
+        generateAiBtn.classList.add("loading");
+
+        generateAiBtn.innerHTML =
+            `<i class="fas fa-spinner fa-spin"></i> Generating...`;
+        generateAiBtn.disabled = true;
         try {
             const formData = new FormData();
 
@@ -43,26 +47,45 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const textBox = document.getElementById("textInput");
+            if (!response.ok) {
+                throw new Error("Failed to generate script.");
+            }
+
+            if (!response.ok) {
+                throw new Error("Failed to generate script.");
+            }
+
             const data = await response.json();
             textBox.value = data.script;
         }
+        catch (error) {
 
-        catch (err) {
-            alert("AI generatin failed.")
-            console.log(err);
+            console.error(error);
+
+            alert("Unable to generate AI script. Please try again.");
+
         }
-        this.disabled = false;
-        this.innerText = "✨ Generate AI Script";
 
+        finally {
+            generateAiBtn.disabled = false;
+            generateAiBtn.classList.remove("loading");
+
+            generateAiBtn.innerHTML =
+                `<i class="fas fa-wand-magic-sparkles"></i> Generate AI Script`;
+
+        }
     });
 
-    document.getElementById("generateHashtagsBtn").addEventListener("click", async function () {
+    const generateHashtagsBtn =
+        document.getElementById("generateHashtagsBtn");
 
-        const hashtagsBox = document.getElementById("hashtagsBox");
+    generateHashtagsBtn.addEventListener("click", async function () {
 
-        this.disabled = true;
-        this.innerText = "Generating...";
+        generateHashtagsBtn.classList.add("loading");
 
+        generateHashtagsBtn.innerHTML =
+            `<i class="fas fa-spinner fa-spin"></i> Generating...`;
+        generateHashtagsBtn.disabled = true;
         try {
 
             const formData = new FormData();
@@ -103,18 +126,22 @@ document.addEventListener("DOMContentLoaded", function () {
             hashtagsBox.value = data.hashtags;
 
         }
+        catch (error) {
 
-        catch (err) {
+            console.error(error);
 
-            alert("Hashtag generation failed.");
-
-            console.log(err);
+            alert("Unable to generate AI hashtags.");
 
         }
+        finally {
+            generateHashtagsBtn.disabled = false;
 
-        this.disabled = false;
-        this.innerText = "✨ Generate AI Hashtags";
+            generateHashtagsBtn.classList.remove("loading");
 
+            generateHashtagsBtn.innerHTML =
+                `<i class="fas fa-hashtag"></i> Generate AI Hashtags`;
+
+        }
     });
 
 

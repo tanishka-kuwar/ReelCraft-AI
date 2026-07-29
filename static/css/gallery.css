@@ -1,3 +1,67 @@
+.gallery-header{
+
+    text-align:center;
+
+    margin-bottom:60px;
+
+}
+.hero-badge{
+
+    display:inline-block;
+
+    padding:10px 22px;
+
+    border-radius:999px;
+
+    background:rgba(139,92,246,.12);
+
+    color:#8B5CF6;
+
+    font-weight:600;
+
+}
+.gallery-header h1{
+
+    font-size:3rem;
+
+    margin:20px 0;
+
+}
+.gallery-header p{
+
+    color:#94A3B8;
+
+    max-width:650px;
+
+    margin:auto;
+
+}
+.gallery-stats{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:25px;
+
+    margin-top:50px;
+
+    margin-bottom:60px;
+
+}
+.stat-card{
+
+    background:rgba(30,41,59,.9);
+
+    border-radius:20px;
+
+    padding:30px;
+
+    text-align:center;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
 .gallery-container {
     padding: 2rem 0;
 }
@@ -30,26 +94,52 @@
     transform: translateY(-5px);
 }
 
-.reel-card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.reel-card{
+
+    background:#1E293B;
+
+    border-radius:22px;
+
+    overflow:hidden;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    transition:.35s;
+
 }
-.reel-card video {
-    width: 100%;
-    aspect-ratio: 9 / 16;
-    object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+.reel-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:
+
+        0 20px 45px rgba(139,92,246,.22);
+
 }
-.reel-actions {
-    display: flex;
-    justify-content: center;
+.reel-card video{
+
+    border-radius:0;
+
+}
+.reel-name{
+
+    font-size:1rem;
+
+    color:white;
+
+    font-weight:600;
+
+    padding:0 20px;
+
+}
+.reel-actions{
+
+    display:flex;
+
+    gap:12px;
+
+    padding:20px;
+
 }
 .reel-thumbnail {
     position: relative;
@@ -67,43 +157,87 @@
     object-fit: cover;
 }
 
-.delete-btn {
-    margin-bottom: 5px;
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 6px 14px;
-    font-size: 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+.delete-btn{
+
+    flex:1;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    padding:12px;
+
+    text-decoration:none;
+
+    color:#fff;
+
+    font-weight:600;
+
+    border-radius:12px;
+
+    background:#EF4444;
+
+    transition:.3s;
+
+    border:none;
+
 }
 
-.delete-btn:hover {
-    background-color: #b02a37;
-    transform: scale(1.05);
-}
+.delete-btn:hover{
 
+    transform:translateY(-2px);
+
+    background:#DC2626;
+
+    box-shadow:0 10px 25px rgba(239,68,68,.35);
+
+}
 .download-btn{
-    margin-bottom: 5px;
-    margin-right: 5px;
-    background-color: #dc3545;
-    color: #fff;
-    display: inline-block;
-    padding: 6px 14px;
-    text-decoration: none;
-    border-radius: 6px;
-    border: none;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+
+    flex:1;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    padding:12px;
+
+    text-decoration:none;
+
+    color:#fff;
+
+    font-weight:600;
+
+    border-radius:12px;
+
+    background:linear-gradient(
+        135deg,
+        #8B5CF6,
+        #3B82F6
+    );
+
+    transition:.3s;
+
+    border:none;
+
 }
 
-.download-btn:hover {
-    background-color: #b02a37;
-    transform: scale(1.05);
+.download-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 25px rgba(59,130,246,.35);
+
 }
+
 
 
 .play-overlay {
@@ -176,15 +310,17 @@
 }
 
 /* Modal box */
-.modal-box {
-    background: #fff;
-    padding: 20px 25px;
-    border-radius: 12px;
-    width: 300px;
-    text-align: center;
-    animation: scaleIn 0.2s ease;
-}
+.modal-box{
 
+    background:#1E293B;
+
+    color:white;
+
+    border-radius:20px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
 .modal-box h3 {
     margin-bottom: 10px;
 }
